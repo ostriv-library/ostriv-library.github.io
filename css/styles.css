@@ -1,0 +1,10 @@
+.btn svg {
+    margin-bottom: 4px;
+}
+.modal {
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+}
+.bookLang {
+    cursor: default;
+}
