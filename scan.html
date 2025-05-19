@@ -39,51 +39,70 @@
 		<div class="row">
 			<div class="col mt-4">
 
-  <h2 class="mb-4 text-center">Бібліотечний сканер</h2>
+				<h2 class="mb-4 text-center">Бібліотечний сканер</h2>
 
-  <!-- Сканер книги -->
-  <h5>Скануйте книгу:</h5>
-  <div id="bookScanner" class="mb-4" style="max-width: 500px; margin: auto;"></div>
+<!-- 📦 Інтерфейс сканування -->
+<div id="scannerInterface">
 
-  <!-- Сканер читача -->
-  <h5 class="mt-4">Скануйте читача:</h5>
-  <div id="readerScanner" class="mb-4" style="max-width: 500px; margin: auto;"></div>
+	<!-- Сканер книги -->
+	<h5>Скануйте книгу:</h5>
+	<div id="bookScanner" class="mb-4" style="max-width: 500px; margin: auto;"></div>
 
-  <!-- Відповідь -->
-  <div class="text-center">
-    <h5>Відповідь сервера:</h5>
-    <div id="responseOutput" class="border rounded p-3 mb-3"></div>
-    <button id="restartBtn" class="btn btn-primary d-none">Нове сканування</button>
-  </div>
-
-			</div>
-		</div>
+	<!-- Сканер читача -->
+	<div id="readerSection" class="mb-4" style="max-width: 500px; margin: auto; display: none;">
+		<h5>Скануйте читача:</h5>
+		<div id="readerScanner" class="mb-3"></div>
+		<button id="skipReaderBtn" class="btn btn-secondary">Пропустити</button>
 	</div>
-	<hr class="mt-4">
-	<footer class="container-fluid">
-		<p class="float-end">
-			<a href="#" title="Наверх"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/></svg></a>
-		</p>
-		<p>© 2025, Українська бібліотека на PEI. <br><span class="small text-body-secondary">Дизайн та розробка <a href="https://burdyga.design/" target="_blank">Burdyga.Design</a></span></p>
-	</footer>
-	
-	<script>
+</div>
+
+<!-- 🧾 Результат -->
+<div id="responseSection" class="mt-4 d-none">
+	<div id="responseOutput" class="border rounded p-4 bg-white shadow-sm text-center fs-5">
+		Завантаження...
+	</div>
+	<div class="text-center mt-3">
+		<button id="restartBtn" class="btn btn-primary">Нове сканування</button>
+	</div>
+</div>
+
+
+</div>
+</div>
+</div>
+</div>
+<hr class="mt-4">
+<footer class="container-fluid">
+	<p class="float-end">
+		<a href="#" title="Наверх"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/></svg></a>
+	</p>
+	<p>© 2025, Українська бібліотека на PEI. <br><span class="small text-body-secondary">Дизайн та розробка <a href="https://burdyga.design/" target="_blank">Burdyga.Design</a></span></p>
+</footer>
+<script>
   const bookScannerId = "bookScanner";
   const readerScannerId = "readerScanner";
+  const readerSection = document.getElementById("readerSection");
+  const scannerInterface = document.getElementById("scannerInterface");
+  const responseSection = document.getElementById("responseSection");
+  const responseOutput = document.getElementById("responseOutput");
+  const restartBtn = document.getElementById("restartBtn");
+  const skipReaderBtn = document.getElementById("skipReaderBtn");
+
   let html5QrBook = null;
   let html5QrReader = null;
 
   let bookCode = null;
   let readerCode = null;
-
-  const responseOutput = document.getElementById("responseOutput");
-  const restartBtn = document.getElementById("restartBtn");
+  let readerScannerStarted = false;
 
   function clearState() {
     bookCode = null;
     readerCode = null;
+    readerScannerStarted = false;
     responseOutput.innerHTML = "";
-    restartBtn.classList.add("d-none");
+    responseSection.classList.add("d-none");
+    scannerInterface.style.display = "block";
+    readerSection.style.display = "none";
     document.getElementById(bookScannerId).innerHTML = "";
     document.getElementById(readerScannerId).innerHTML = "";
   }
@@ -102,7 +121,6 @@
           html5QrBook.stop().then(() => html5QrBook.clear()).then(() => {
             document.getElementById(bookScannerId).innerHTML = "";
             bookCode = decodedText;
-            alert(`Код книги зчитано: ${bookCode}`);
             startReaderScanner();
           });
         }
@@ -113,42 +131,67 @@
   }
 
   function startReaderScanner() {
-    html5QrReader = new Html5Qrcode(readerScannerId);
-    Html5Qrcode.getCameras().then(cameras => {
-      if (!cameras || cameras.length === 0) {
-        alert("Камеру не знайдено.");
-        return;
-      }
+    readerSection.style.display = "block";
+    document.getElementById(readerScannerId).innerHTML = "";
 
-      html5QrReader.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        decodedText => {
-          html5QrReader.stop().then(() => html5QrReader.clear()).then(() => {
-            document.getElementById(readerScannerId).innerHTML = "";
-            readerCode = decodedText;
-            alert(`Код читача зчитано: ${readerCode}`);
-            sendRequest();
-          });
+    html5QrReader = new Html5Qrcode(readerScannerId);
+    readerScannerStarted = false;
+
+    Html5Qrcode.getCameras()
+      .then(cameras => {
+        if (!cameras || cameras.length === 0) {
+          console.warn("Камеру не знайдено для читача.");
+          return;
         }
-      );
-    }).catch(err => {
-      console.error("Помилка камери (читач):", err);
-    });
+
+        return html5QrReader
+          .start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            decodedText => {
+              html5QrReader
+                .stop()
+                .then(() => html5QrReader.clear())
+                .then(() => {
+                  document.getElementById(readerScannerId).innerHTML = "";
+                  readerCode = decodedText;
+                  showLoadingAndSendRequest();
+                });
+            }
+          )
+          .then(() => {
+            readerScannerStarted = true;
+          })
+          .catch(err => {
+            console.warn("Помилка запуску сканера читача:", err);
+            readerScannerStarted = false;
+          });
+      })
+      .catch(err => {
+        console.warn("Не вдалося отримати список камер:", err);
+        readerScannerStarted = false;
+      });
+  }
+
+  function showLoadingAndSendRequest() {
+    scannerInterface.style.display = "none";
+    responseSection.classList.remove("d-none");
+    responseOutput.innerHTML = "Завантаження...";
+    sendRequest();
   }
 
   async function sendRequest() {
-    const url = `https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?book=${encodeURIComponent(bookCode)}&reader=${encodeURIComponent(readerCode)}`;
+    const encodedBook = encodeURIComponent(bookCode || "");
+    const encodedReader = encodeURIComponent(readerCode || "0");
 
-    responseOutput.innerHTML = `<div class="text-muted">Завантаження...</div>`;
+    const url = `https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?book=${encodedBook}&reader=${encodedReader}`;
 
     try {
       const response = await fetch(url);
       const text = await response.text();
       responseOutput.innerHTML = text;
-      restartBtn.classList.remove("d-none");
     } catch (error) {
-      responseOutput.innerHTML = `<div class="text-danger">Помилка запиту: ${error.message}</div>`;
+      responseOutput.innerHTML = "Сталася помилка при отриманні відповіді.";
     }
   }
 
@@ -157,7 +200,20 @@
     startBookScanner();
   });
 
-  // Старт зчитування при завантаженні
+  skipReaderBtn.addEventListener("click", () => {
+    readerCode = "0";
+    if (readerScannerStarted && html5QrReader) {
+      html5QrReader.stop().then(() => html5QrReader.clear()).finally(() => {
+        document.getElementById(readerScannerId).innerHTML = "";
+        showLoadingAndSendRequest();
+      });
+    } else {
+      document.getElementById(readerScannerId).innerHTML = "";
+      showLoadingAndSendRequest();
+    }
+  });
+
+  // Старт одразу після завантаження
   startBookScanner();
 </script>
 </body>
