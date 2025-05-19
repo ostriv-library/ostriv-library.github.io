@@ -38,19 +38,35 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col mt-4">
-				<h2 class="mb-4 text-center">Бібліотечний сканер</h2>
 
-  <div class="d-flex justify-content-center gap-3 mb-4">
-    <button class="btn btn-primary" id="scanBookBtn">Сканувати книгу</button>
-    <button class="btn btn-success" id="scanReaderBtn">Сканувати читача</button>
+
+<h2 class="mb-4 text-center">Бібліотечний сканер</h2>
+
+  <!-- Сканер книги -->
+  <h5>Скануйте книгу:</h5>
+  <div id="bookScanner" class="mb-4" style="max-width: 500px; margin: auto;"></div>
+
+  <!-- Інпут і кнопка для читача -->
+  <div class="mb-3 row">
+    <label for="readerInput" class="col-sm-2 col-form-label">ID читача:</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="readerInput" placeholder="Введіть або скануйте" />
+    </div>
+    <div class="col-sm-4">
+      <button class="btn btn-success" id="scanReaderBtn">Сканувати читача</button>
+    </div>
   </div>
 
-  <div id="scanner" class="mb-4" style="max-width: 500px; margin: auto;"></div>
+  <!-- Сканер читача (динамічний) -->
+  <div id="readerScanner" class="mb-4" style="max-width: 500px; margin: auto;"></div>
 
+  <!-- Посилання -->
   <div class="text-center">
     <h5>Згенероване посилання:</h5>
     <p id="resultLink" class="text-break"></p>
   </div>
+
+
 			</div>
 		</div>
 	</div>
@@ -65,74 +81,84 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 
 	<script>
-  const scannerDivId = "scanner";
-  const html5QrCode = new Html5Qrcode(scannerDivId);
+  const bookScannerId = "bookScanner";
+  const readerScannerId = "readerScanner";
+  const html5QrBook = new Html5Qrcode(bookScannerId);
+  let html5QrReader = null;
+
   let bookCode = null;
   let readerCode = null;
 
   const resultLinkElement = document.getElementById("resultLink");
+  const readerInput = document.getElementById("readerInput");
 
-  const bookDisplay = document.createElement("p");
-  const readerDisplay = document.createElement("p");
-  resultLinkElement.parentNode.insertBefore(bookDisplay, resultLinkElement);
-  resultLinkElement.parentNode.insertBefore(readerDisplay, resultLinkElement);
-
-  function updateDisplay() {
-    bookDisplay.innerHTML = bookCode ? `<strong>Книга:</strong> ${bookCode}` : '';
-    readerDisplay.innerHTML = readerCode ? `<strong>Читач:</strong> ${readerCode}` : '';
-  }
-
-  function updateLink() {
-    updateDisplay();
-    if (bookCode && readerCode) {
-      const url = `https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?book=${encodeURIComponent(bookCode)}&reader=${encodeURIComponent(readerCode)}`;
-      resultLinkElement.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
-    } else {
-      resultLinkElement.innerHTML = "";
+  // Завжди запускаємо сканер для книги при старті
+  Html5Qrcode.getCameras().then(cameras => {
+    if (!cameras || cameras.length === 0) {
+      alert("Камеру не знайдено.");
+      return;
     }
+    html5QrBook.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      decodedText => {
+        html5QrBook.stop().then(() => html5QrBook.clear()).then(() => {
+          document.getElementById(bookScannerId).innerHTML = "";
+          bookCode = decodedText;
+          alert(`Код книги зчитано: ${bookCode}`);
+        });
+      }
+    );
+  }).catch(err => {
+    console.error("Помилка камери (книга):", err);
+  });
+
+  function generateLink() {
+    const readerVal = readerCode || readerInput.value.trim();
+    if (!bookCode) {
+      alert("Спочатку проскануйте книгу.");
+      return;
+    }
+    if (!readerVal) {
+      alert("Введіть або проскануйте код читача.");
+      return;
+    }
+    const url = `https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?book=${encodeURIComponent(bookCode)}&reader=${encodeURIComponent(readerVal)}`;
+    resultLinkElement.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
   }
 
-  function startScan(type) {
+  // Сканування читача по кнопці
+  document.getElementById("scanReaderBtn").addEventListener("click", () => {
+    // Якщо вже є сканер — очистити
+    if (html5QrReader) {
+      html5QrReader.stop().then(() => html5QrReader.clear());
+    }
+
+    html5QrReader = new Html5Qrcode(readerScannerId);
+
     Html5Qrcode.getCameras().then(cameras => {
       if (!cameras || cameras.length === 0) {
         alert("Камеру не знайдено.");
         return;
       }
 
-      html5QrCode.start(
+      html5QrReader.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         decodedText => {
-          html5QrCode.stop().then(() => {
-            return html5QrCode.clear();
-          }).then(() => {
-            document.getElementById(scannerDivId).innerHTML = "";
-            if (type === 'book') {
-              bookCode = decodedText;
-              alert(`Код книги зчитано: ${decodedText}`);
-            } else if (type === 'reader') {
-              readerCode = decodedText;
-              alert(`Код читача зчитано: ${decodedText}`);
-            }
-            updateLink();
-          }).catch(err => {
-            console.error("Помилка при зупинці або очищенні сканера:", err);
+          html5QrReader.stop().then(() => html5QrReader.clear()).then(() => {
+            document.getElementById(readerScannerId).innerHTML = "";
+            readerCode = decodedText;
+            readerInput.value = readerCode;
+            alert(`Код читача зчитано: ${readerCode}`);
+            generateLink(); // одразу показуємо посилання
           });
-        },
-        error => {
-          // Можна залишити пустим, або показати в консоль
-          // console.warn(`Спроба сканування: ${error}`);
         }
       );
-
     }).catch(err => {
-      console.error(err);
-      alert("Помилка доступу до камери.");
+      console.error("Помилка камери (читач):", err);
     });
-  }
-
-  document.getElementById("scanBookBtn").addEventListener("click", () => startScan('book'));
-  document.getElementById("scanReaderBtn").addEventListener("click", () => startScan('reader'));
+  });
 </script>
 </body>
 </html>
