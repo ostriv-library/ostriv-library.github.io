@@ -65,55 +65,74 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 
 	<script>
-		const scannerDivId = "scanner";
-		const html5QrCode = new Html5Qrcode(scannerDivId);
-		let bookCode = null;
-		let readerCode = null;
+  const scannerDivId = "scanner";
+  const html5QrCode = new Html5Qrcode(scannerDivId);
+  let bookCode = null;
+  let readerCode = null;
 
-		const resultLinkElement = document.getElementById("resultLink");
+  const resultLinkElement = document.getElementById("resultLink");
 
-		function updateLink() {
-			if (bookCode && readerCode) {
-				const url = `https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?book=${encodeURIComponent(bookCode)}&reader=${encodeURIComponent(readerCode)}`;
-				resultLinkElement.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
-			}
-		}
+  const bookDisplay = document.createElement("p");
+  const readerDisplay = document.createElement("p");
+  resultLinkElement.parentNode.insertBefore(bookDisplay, resultLinkElement);
+  resultLinkElement.parentNode.insertBefore(readerDisplay, resultLinkElement);
 
-		function startScan(type) {
-			Html5Qrcode.getCameras().then(cameras => {
-				if (cameras && cameras.length) {
-					html5QrCode.start(
-						{ facingMode: "environment" },
-						{ fps: 10, qrbox: { width: 250, height: 250 } },
-						decodedText => {
-							html5QrCode.stop();
-            document.getElementById(scannerDivId).innerHTML = ""; // Очистити вміст
+  function updateDisplay() {
+    bookDisplay.innerHTML = bookCode ? `<strong>Книга:</strong> ${bookCode}` : '';
+    readerDisplay.innerHTML = readerCode ? `<strong>Читач:</strong> ${readerCode}` : '';
+  }
 
+  function updateLink() {
+    updateDisplay();
+    if (bookCode && readerCode) {
+      const url = `https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?book=${encodeURIComponent(bookCode)}&reader=${encodeURIComponent(readerCode)}`;
+      resultLinkElement.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
+    } else {
+      resultLinkElement.innerHTML = "";
+    }
+  }
+
+  function startScan(type) {
+    Html5Qrcode.getCameras().then(cameras => {
+      if (!cameras || cameras.length === 0) {
+        alert("Камеру не знайдено.");
+        return;
+      }
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        decodedText => {
+          html5QrCode.stop().then(() => {
+            return html5QrCode.clear();
+          }).then(() => {
+            document.getElementById(scannerDivId).innerHTML = "";
             if (type === 'book') {
-            	bookCode = decodedText;
-            	alert(`Код книги зчитано: ${decodedText}`);
+              bookCode = decodedText;
+              alert(`Код книги зчитано: ${decodedText}`);
             } else if (type === 'reader') {
-            	readerCode = decodedText;
-            	alert(`Код читача зчитано: ${decodedText}`);
+              readerCode = decodedText;
+              alert(`Код читача зчитано: ${decodedText}`);
             }
-
             updateLink();
+          }).catch(err => {
+            console.error("Помилка при зупинці або очищенні сканера:", err);
+          });
         },
         error => {
-            // Помилки сканування (можна не виводити)
+          // Можна залишити пустим, або показати в консоль
+          // console.warn(`Спроба сканування: ${error}`);
         }
-        );
-				} else {
-					alert("Камеру не знайдено.");
-				}
-			}).catch(err => {
-				console.error(err);
-				alert("Помилка доступу до камери.");
-			});
-		}
+      );
 
-		document.getElementById("scanBookBtn").addEventListener("click", () => startScan('book'));
-		document.getElementById("scanReaderBtn").addEventListener("click", () => startScan('reader'));
-	</script>
+    }).catch(err => {
+      console.error(err);
+      alert("Помилка доступу до камери.");
+    });
+  }
+
+  document.getElementById("scanBookBtn").addEventListener("click", () => startScan('book'));
+  document.getElementById("scanReaderBtn").addEventListener("click", () => startScan('reader'));
+</script>
 </body>
 </html>
