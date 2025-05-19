@@ -14,7 +14,7 @@
 
 		gtag('config', 'G-VZETC56QET');
 	</script>
-	
+		<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -38,8 +38,19 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col mt-4">
-				<div id="reader"></div>
-				<div id="result"></div>
+				<h2 class="mb-4 text-center">Бібліотечний сканер</h2>
+
+  <div class="d-flex justify-content-center gap-3 mb-4">
+    <button class="btn btn-primary" id="scanBookBtn">Сканувати книгу</button>
+    <button class="btn btn-success" id="scanReaderBtn">Сканувати читача</button>
+  </div>
+
+  <div id="scanner" class="mb-4" style="max-width: 500px; margin: auto;"></div>
+
+  <div class="text-center">
+    <h5>Згенероване посилання:</h5>
+    <p id="resultLink" class="text-break"></p>
+  </div>
 			</div>
 		</div>
 	</div>
@@ -52,43 +63,57 @@
 	</footer>
 	
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-	<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
 	<script>
+		const scannerDivId = "scanner";
+		const html5QrCode = new Html5Qrcode(scannerDivId);
+		let bookCode = null;
+		let readerCode = null;
 
-		const scanner = new Html5QrcodeScanner('reader', { 
-        // Scanner will be initialized in DOM inside element with id of 'reader'
-			qrbox: {
-				width: 250,
-				height: 250,
-        },  // Sets dimensions of scanning box (set relative to reader element width)
-        fps: 20, // Frames per second to attempt a scan
-    });
+		const resultLinkElement = document.getElementById("resultLink");
 
-
-		scanner.render(success, error);
-    // Starts scanner
-
-		function success(result) {
-
-			document.getElementById('result').innerHTML = `
-        <h2>Success!</h2>
-        <p><a href="${result}">${result}</a></p>
-			`;
-        // Prints result as a link inside result element
-
-			scanner.clear();
-        // Clears scanning instance
-
-			document.getElementById('reader').remove();
-        // Removes reader element from DOM since no longer needed
-			
+		function updateLink() {
+			if (bookCode && readerCode) {
+				const url = `https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?book=${encodeURIComponent(bookCode)}&reader=${encodeURIComponent(readerCode)}`;
+				resultLinkElement.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
+			}
 		}
 
-		function error(err) {
-			console.error(err);
-        // Prints any errors to the console
+		function startScan(type) {
+			Html5Qrcode.getCameras().then(cameras => {
+				if (cameras && cameras.length) {
+					html5QrCode.start(
+						{ facingMode: "environment" },
+						{ fps: 10, qrbox: { width: 250, height: 250 } },
+						decodedText => {
+							html5QrCode.stop();
+            document.getElementById(scannerDivId).innerHTML = ""; // Очистити вміст
+
+            if (type === 'book') {
+            	bookCode = decodedText;
+            	alert(`Код книги зчитано: ${decodedText}`);
+            } else if (type === 'reader') {
+            	readerCode = decodedText;
+            	alert(`Код читача зчитано: ${decodedText}`);
+            }
+
+            updateLink();
+        },
+        error => {
+            // Помилки сканування (можна не виводити)
+        }
+        );
+				} else {
+					alert("Камеру не знайдено.");
+				}
+			}).catch(err => {
+				console.error(err);
+				alert("Помилка доступу до камери.");
+			});
 		}
 
+		document.getElementById("scanBookBtn").addEventListener("click", () => startScan('book'));
+		document.getElementById("scanReaderBtn").addEventListener("click", () => startScan('reader'));
 	</script>
 </body>
 </html>
