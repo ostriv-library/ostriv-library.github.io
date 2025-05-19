@@ -33,56 +33,57 @@
 					</li>
 				</ul>
 			</div>
-		</nav>
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col mt-4 mb-4">
-					<h1>Українська бібліотека Острова Принца Едуарда</h1>
-					<div class="btn-group mt-2" role="group" aria-label="Available of the books">
-						<input type="radio" class="btn-check" name="bookAvailable" id="bookAvailable1" autocomplete="off" checked>
-						<label class="btn btn-outline-primary" for="bookAvailable1" onclick="setFilter('all')">Всі книжки</label>
-						<input type="radio" class="btn-check" name="bookAvailable" id="bookAvailable2" autocomplete="off">
-						<label class="btn btn-outline-success" for="bookAvailable2" onclick="setFilter('Yes')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> Доступні</label>
-						<input type="radio" class="btn-check" name="bookAvailable" id="bookAvailable3" autocomplete="off">
-						<label class="btn btn-outline-danger" for="bookAvailable3" onclick="setFilter('No')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/></svg> Зайняті</label>
-					</div>
-					<button id="sort-button" class="btn btn-dark mt-2 float-end" onclick="toggleSortOrder()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371zm1.57-.785L11 2.687h-.047l-.652 2.157z"/><path d="M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645zM4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293z"/></svg> Назва</button>
+		</div>
+	</nav>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col mt-4 mb-4">
+				<h1>Українська бібліотека Острова Принца Едуарда</h1>
+				<div class="btn-group mt-2" role="group" aria-label="Available of the books">
+					<input type="radio" class="btn-check" name="bookAvailable" id="bookAvailable1" autocomplete="off" checked>
+					<label class="btn btn-outline-primary" for="bookAvailable1" onclick="setFilter('all')">Всі книжки</label>
+					<input type="radio" class="btn-check" name="bookAvailable" id="bookAvailable2" autocomplete="off">
+					<label class="btn btn-outline-success" for="bookAvailable2" onclick="setFilter('Yes')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> Доступні</label>
+					<input type="radio" class="btn-check" name="bookAvailable" id="bookAvailable3" autocomplete="off">
+					<label class="btn btn-outline-danger" for="bookAvailable3" onclick="setFilter('No')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/></svg> Зайняті</label>
 				</div>
+				<button id="sort-button" class="btn btn-dark mt-2 float-end" onclick="toggleSortOrder()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371zm1.57-.785L11 2.687h-.047l-.652 2.157z"/><path d="M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645zM4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293z"/></svg> Назва</button>
 			</div>
-			<div class="row">
-				<div class="col">
+		</div>
+		<div class="row">
+			<div class="col">
 
-				</div>
 			</div>
-			<div class="row row-cols-1 row-cols-sm-3 row-cols-md-4 row-cols-xl-6 g-4"  id="data-container">
-				<div class="d-flex flex-column min-vw-100" style="min-height: calc(100vh - 310px);">
-					<div class="d-flex flex-grow-1 justify-content-center align-items-center">
-						<div class="spinner-border" role="status">
-							<span class="visually-hidden">Завантаження...</span>
-						</div> 
-					</div>
+		</div>
+		<div class="row row-cols-1 row-cols-sm-3 row-cols-md-4 row-cols-xl-6 g-4"  id="data-container">
+			<div class="d-flex flex-column min-vw-100" style="min-height: calc(100vh - 310px);">
+				<div class="d-flex flex-grow-1 justify-content-center align-items-center">
+					<div class="spinner-border" role="status">
+						<span class="visually-hidden">Завантаження...</span>
+					</div> 
 				</div>
 			</div>
 		</div>
-		<hr class="mt-4">
-		<footer class="container-fluid">
-			<p class="float-end">
-				<a href="#" title="Наверх"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/></svg></a>
-			</p>
-			<p>© 2025, Українська бібліотека на PEI. <br><span class="small text-body-secondary">Дизайн та розробка <a href="https://burdyga.design/" target="_blank">Burdyga.Design</a></span></p>
-		</footer>
-		<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					</div>
-					<div class="modal-body" id="modalContent">
-					</div>
+	</div>
+	<hr class="mt-4">
+	<footer class="container-fluid">
+		<p class="float-end">
+			<a href="#" title="Наверх"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/></svg></a>
+		</p>
+		<p>© 2025, Українська бібліотека на PEI. <br><span class="small text-body-secondary">Дизайн та розробка <a href="https://burdyga.design/" target="_blank">Burdyga.Design</a></span></p>
+	</footer>
+	<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="modalContent">
 				</div>
 			</div>
 		</div>
-		<script src="js/scripts.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-	</body>
-	</html>
+	</div>
+	<script src="js/scripts.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+</body>
+</html>
