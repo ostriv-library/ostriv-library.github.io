@@ -8,3 +8,7 @@
 .bookLang {
     cursor: default;
 }
+.bookFilter .spinner-border {
+    height: 12px;
+    width: 12px;
+}
