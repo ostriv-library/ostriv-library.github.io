@@ -898,5 +898,14 @@
     "Lang": "UA",
     "Available": "Yes",
     "Cover": "https://images.prom.ua/3256243865_w640_h640_ne-vir-boris.jpg"
+  },
+  {
+    "Book ID": 101,
+    "Name": "тест book",
+    "Description": "опис 2",
+    "Author": "автор",
+    "Lang": "UA",
+    "Available": "Yes",
+    "Cover": "https://websitename.com/images/book-cover.jpg"
   }
 ]
