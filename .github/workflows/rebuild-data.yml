@@ -1,0 +1,50 @@
+name: Rebuild books data
+
+on:
+  repository_dispatch:
+    types: [rebuild-books]
+  workflow_dispatch:
+  schedule:
+    # Once a day at 03:00 UTC as a safety net in case a dispatch is missed.
+    - cron: '0 3 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild-data
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch books JSON from Apps Script
+        env:
+          APPS_SCRIPT_URL: ${{ secrets.APPS_SCRIPT_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${APPS_SCRIPT_URL:-}" ]; then
+            echo "APPS_SCRIPT_URL secret is not set" >&2
+            exit 1
+          fi
+          mkdir -p data
+          # Follow redirects (Apps Script returns 302 to googleusercontent.com),
+          # fail on HTTP errors, and validate that the body parses as JSON
+          # before overwriting data/books.json.
+          tmp="$(mktemp)"
+          curl -fsSL --retry 3 --retry-delay 2 \
+            "${APPS_SCRIPT_URL}?json=true" -o "$tmp"
+          jq 'if type == "array" then . else error("expected JSON array") end' \
+            "$tmp" > data/books.json
+          rm -f "$tmp"
+          echo "books in data/books.json: $(jq 'length' data/books.json)"
+
+      - name: Commit updated data/books.json
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore(data): refresh books.json'
+          file_pattern: data/books.json

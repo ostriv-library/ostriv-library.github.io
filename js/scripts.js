@@ -1,27 +1,41 @@
-const url = 'https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?json=true'; 
+const BOOKS_URL = '/data/books.json';
+const AVAILABILITY_URL = 'https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?availability=true';
 
 let jsonData = [];
 let currentOrder = 'asc'; // За зростанням
 let currentFilter = 'all'; // 'all', 'Yes', 'No'
 
-// Завантаження та початкове сортування
-fetch(url)
-.then(response => {
-	if (!response.ok) {
-		throw new Error('Мережева помилка: ' + response.status);
-	}
-	return response.json();
-})
-.then(data => {
-	jsonData = data;
+// Каталог тягнемо зі статичного JSON (швидко, з CDN GitHub Pages),
+// а свіжий статус доступності — окремим запитом до Apps Script. Якщо
+// другий запит не вдався, фолбекаємось на поле Available з books.json.
+Promise.all([
+	fetch(BOOKS_URL).then(response => {
+		if (!response.ok) {
+			throw new Error('Мережева помилка: ' + response.status);
+		}
+		return response.json();
+	}),
+	fetch(AVAILABILITY_URL)
+		.then(response => response.ok ? response.json() : null)
+		.catch(() => null),
+])
+.then(([books, availability]) => {
+	jsonData = books.map(book => {
+		const id = book['Book ID'];
+		const fresh = availability && id != null ? availability[id] : undefined;
+		return {
+			...book,
+			Available: fresh != null && fresh !== '' ? fresh : book.Available,
+		};
+	});
 	sortAndRender();
 
 	const availableCount = jsonData.filter(item => item.Available === 'Yes').length;
 	const notAvailableCount = jsonData.filter(item => item.Available === 'No').length;
 
-	document.getElementById('allBooks').innerHTML = jsonData.length;	
-	document.getElementById('availableBooks').innerHTML = availableCount;	
-	document.getElementById('unavailableBooks').innerHTML= notAvailableCount;	
+	document.getElementById('allBooks').innerHTML = jsonData.length;
+	document.getElementById('availableBooks').innerHTML = availableCount;
+	document.getElementById('unavailableBooks').innerHTML= notAvailableCount;
 })
 .catch(error => {
 	document.getElementById('data-container').innerText = 'Помилка: ' + error.message;
