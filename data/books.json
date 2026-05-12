@@ -907,5 +907,14 @@
     "Lang": "UA",
     "Available": "Yes",
     "Cover": "https://websitename.com/images/book-cover.jpg"
+  },
+  {
+    "Book ID": 102,
+    "Name": "тест 2",
+    "Description": "опис 2",
+    "Author": "автор 2",
+    "Lang": "ENG",
+    "Available": "Yes",
+    "Cover": "https://websitename.com/images/book-cover.jpg"
   }
 ]
