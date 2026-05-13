@@ -8,9 +8,11 @@
 .bookLang {
     cursor: default;
 }
-.availability-filter .spinner-border {
-    height: 12px;
-    width: 12px;
+/* Лічильники в бейджах сайдбару — компактний спінер (Наявність + Мова; перебиваємо BS .spinner-border-sm) */
+.spinner-border.filter-count-spinner {
+	width: 12px !important;
+	height: 12px !important;
+	border-width: 2px !important;
 }
 
 /* Sidebar */
