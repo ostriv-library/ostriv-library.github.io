@@ -8,7 +8,34 @@
 .bookLang {
     cursor: default;
 }
-.bookFilter .spinner-border {
+.availability-filter .spinner-border {
     height: 12px;
     width: 12px;
+}
+
+/* Sidebar */
+@media (min-width: 992px) {
+    .sidebar {
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+        max-height: 100vh;
+        overflow-y: auto;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+}
+
+.sidebar-body .form-check {
+    padding-left: 0;
+}
+
+.sidebar-body .form-check .form-check-input {
+    margin-left: 0;
+    margin-right: 0.5rem;
+    float: none;
+}
+
+.sidebar-body .form-check .badge {
+    font-weight: 500;
 }
