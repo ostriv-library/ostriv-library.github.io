@@ -64,7 +64,7 @@ function renderData(data) {
 
 	if (data.length === 0) {
 		container.innerHTML = `
-			<div class="d-flex flex-column min-vw-100" style="min-height: calc(100vh - 202px);">
+			<div class="d-flex flex-column w-100" style="min-height: calc(100vh - 202px);">
 				<div class="d-flex flex-grow-1 justify-content-center align-items-center">
 					<p>Немає результатів для вибраного фільтру</p>
 				</div>

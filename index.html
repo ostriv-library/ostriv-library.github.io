@@ -56,7 +56,7 @@
 							<div class="d-flex justify-content-between align-items-center gap-2 mb-2">
 								<div class="form-check m-0 flex-grow-1">
 									<input class="form-check-input" type="radio" name="bookAvailable" id="bookAvailable1" autocomplete="off" value="all" checked>
-									<label class="form-check-label lh-sm cursor-pointer text-body position-absolute" for="bookAvailable1"><span class="badge rounded-pill text-bg-secondary">Всі</span></label>
+									<label class="form-check-label" for="bookAvailable1">Всі</label>
 								</div>
 								<span id="allBooks" class="badge rounded-pill text-bg-dark flex-shrink-0">
 									<span class="spinner-border spinner-border-sm filter-count-spinner" aria-hidden="true"></span>
@@ -65,7 +65,7 @@
 							<div class="d-flex justify-content-between align-items-center gap-2 mb-2">
 								<div class="form-check m-0 flex-grow-1">
 									<input class="form-check-input" type="radio" name="bookAvailable" id="bookAvailable2" autocomplete="off" value="Yes">
-									<label class="form-check-label lh-sm cursor-pointer text-body position-absolute p-0" for="bookAvailable2"><span class="badge rounded-pill text-bg-success"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>&nbsp;&nbsp;Доступна</span></label>
+									<label class="form-check-label lh-sm cursor-pointer text-body position-absolute p-0" for="bookAvailable2"><span class="badge rounded-pill text-bg-success"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>&nbsp;&nbsp;Доступні</span></label>
 								</div>
 								<span id="availableBooks" class="badge rounded-pill text-bg-dark flex-shrink-0">
 									<span class="spinner-border spinner-border-sm filter-count-spinner" aria-hidden="true"></span>
@@ -74,7 +74,7 @@
 							<div class="d-flex justify-content-between align-items-center gap-2">
 								<div class="form-check m-0 flex-grow-1">
 									<input class="form-check-input" type="radio" name="bookAvailable" id="bookAvailable3" autocomplete="off" value="No">
-									<label class="form-check-label lh-sm cursor-pointer text-body position-absolute p-0" for="bookAvailable3"><span class="badge rounded-pill text-bg-danger"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/></svg>&nbsp;&nbsp;Зайнята</span></label>
+									<label class="form-check-label lh-sm cursor-pointer text-body position-absolute p-0" for="bookAvailable3"><span class="badge rounded-pill text-bg-danger"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/></svg>&nbsp;&nbsp;Зайняті</span></label>
 								</div>
 								<span id="unavailableBooks" class="badge rounded-pill text-bg-dark flex-shrink-0">
 									<span class="spinner-border spinner-border-sm filter-count-spinner" aria-hidden="true"></span>
@@ -134,7 +134,7 @@
 				</div>
 
 				<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5 g-4" id="data-container">
-					<div class="d-flex flex-column min-vw-100" style="min-height: calc(100vh - 310px);">
+					<div class="d-flex flex-column w-100" style="min-height: calc(100vh - 310px);">
 						<div class="d-flex flex-grow-1 justify-content-center align-items-center">
 							<div class="spinner-border" role="status">
 								<span class="visually-hidden">Завантаження...</span>
