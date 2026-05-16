@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /scan.html
+
+Sitemap: https://ostriv-library.github.io/sitemap.xml
