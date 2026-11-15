@@ -80,11 +80,11 @@ function renderData(data) {
 
 		div.innerHTML = `
 			<div class="card h-100 shadow-sm"  data-bs-toggle="modal" data-bs-target="#myModal"  data-description="${escapeHTML(item.Description)}">
-				<img src="${item.Cover}" class="card-img-top h-100" alt="${item.Name}">
+				<img src="${escapeHTML(item.Cover)}" class="card-img-top h-100" alt="${escapeHTML(item.Name)}" loading="lazy" decoding="async">
 				<div class="card-img-overlay  d-flex flex-column justify-content-end">
 				<div>
-					<h6 class="card-title">${item.Name}</h6>
-					<p class="card-text text-truncate"><small class="text-body-secondary">${item.Author}</small><br>
+					<h6 class="card-title">${escapeHTML(item.Name)}</h6>
+					<p class="card-text text-truncate"><small class="text-body-secondary">${escapeHTML(item.Author)}</small><br>
 						<!--<a href="#myModal" class="" data-description="${escapeHTML(item.Description)}" data-bs-toggle="modal">
 							Опис
 						</a>-->
@@ -290,13 +290,12 @@ function writeStateToURL() {
 
 // Екранування тегів
 function escapeHTML(text) {
-	return text
+	return String(text ?? '')
 	.replace(/&/g, "&amp;")
 	.replace(/</g, "&lt;")
 	.replace(/>/g, "&gt;")
 	.replace(/"/g, "&quot;")
-	.replace(/'/g, "&#039;")
-	.replace(/"/g, "&#34;");
+	.replace(/'/g, "&#039;");
 }
 
 // Відправка даних з кнопки у модальне вікно
