@@ -45,7 +45,16 @@
 
 				<h1>Бібліотечний сканер</h1>
 
-				<div id="scannerInterface">
+				<form id="keySection" class="mb-4 d-none" style="max-width: 600px;" autocomplete="off">
+					<label for="scanKeyInput" class="form-label">Ключ сканера</label>
+					<div class="input-group">
+						<input type="password" class="form-control" id="scanKeyInput" required>
+						<button class="btn btn-primary" type="submit">Зберегти</button>
+					</div>
+					<div class="form-text">Ключ зберігається лише на цьому пристрої.</div>
+				</form>
+
+				<div id="scannerInterface" style="display: none;">
 
 					<div id="bookSection">
 						<h5>Відскануйте QR-код книги</h5>
@@ -57,6 +66,8 @@
 						<div id="readerScanner" class="mb-4"></div>
 						<button id="skipReaderBtn" class="btn btn-secondary">Пропустити</button>
 					</div>
+
+					<button id="changeKeyBtn" type="button" class="btn btn-link btn-sm px-0">Змінити ключ</button>
 				</div>
 
 				<div id="responseSection" class="mt-4 d-none">
@@ -92,6 +103,27 @@
 	const responseOutput = document.getElementById("responseOutput");
 	const restartBtn = document.getElementById("restartBtn");
 	const skipReaderBtn = document.getElementById("skipReaderBtn");
+	const keySection = document.getElementById("keySection");
+	const scanKeyInput = document.getElementById("scanKeyInput");
+	const changeKeyBtn = document.getElementById("changeKeyBtn");
+
+	const SCAN_URL = "https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec";
+	const SCAN_KEY_STORAGE = "scanKey";
+
+	// Ключ сканера живе лише в localStorage цього пристрою. У приватному
+	// режимі сховище може бути недоступне — тоді ключ живе до перезавантаження.
+	let memoryKey = null;
+	function getScanKey() {
+		try { return localStorage.getItem(SCAN_KEY_STORAGE) || memoryKey; } catch (e) { return memoryKey; }
+	}
+	function setScanKey(key) {
+		memoryKey = key;
+		try { localStorage.setItem(SCAN_KEY_STORAGE, key); } catch (e) {}
+	}
+	function clearScanKey() {
+		memoryKey = null;
+		try { localStorage.removeItem(SCAN_KEY_STORAGE); } catch (e) {}
+	}
 
 	let html5QrBook = null;
 	let html5QrReader = null;
@@ -107,7 +139,6 @@
 		responseOutput.innerHTML = "";
 		responseSection.classList.add("d-none");
 		restartBtn.classList.add("d-none");
-		scannerInterface.style.display = "block";
 		bookSection.style.display = "block";
 		readerSection.style.display = "none";
 		document.getElementById(bookScannerId).innerHTML = "";
@@ -210,18 +241,22 @@
 	}
 
 	async function sendRequest() {
-		const encodedBook = encodeURIComponent(bookCode || "");
-		const encodedReader = encodeURIComponent(readerCode || "0");
-
-		const url = `https://script.google.com/macros/s/AKfycbzd-N4y7CeNWsasOr0a7RXh9dd8iwPjUPubX0FXDufrMkuHCGtodLUel5RLc9G7W5zA/exec?book=${encodedBook}&reader=${encodedReader}`;
-
 		try {
-			const response = await fetch(url);
+			// text/plain — «простий» запит без CORS preflight, який Apps Script не підтримує.
+			// Ключ іде в тілі, а не в URL.
+			const response = await fetch(SCAN_URL, {
+				method: "POST",
+				headers: { "Content-Type": "text/plain;charset=utf-8" },
+				body: JSON.stringify({ key: getScanKey(), book: bookCode || "", reader: readerCode || "0" }),
+			});
 			const text = (await response.text()).trim();
 			// Apps Script відповідає звичайним текстом. Порожня відповідь або HTML-сторінка
 			// (doGet нічого не повернув) означає, що книгу з таким кодом не знайдено.
 			if (!response.ok || !text || text.startsWith("<")) {
 				showResult(false, "Книгу не знайдено або сервер не відповів");
+			} else if (text === "Помилка: невірний ключ") {
+				clearScanKey();
+				showResult(false, "Невірний ключ сканера. Натисніть «Нове сканування» і введіть ключ ще раз.");
 			} else if (/^(Помилка|Не вдалось)/.test(text)) {
 				showResult(false, text);
 			} else {
@@ -235,9 +270,37 @@
 		}
 	}
 
+	// Без ключа показуємо форму ключа, з ключем — запускаємо сканер книги.
+	function start() {
+		if (getScanKey()) {
+			keySection.classList.add("d-none");
+			scannerInterface.style.display = "block";
+			startBookScanner();
+		} else {
+			scannerInterface.style.display = "none";
+			keySection.classList.remove("d-none");
+			scanKeyInput.value = "";
+			scanKeyInput.focus();
+		}
+	}
+
+	keySection.addEventListener("submit", e => {
+		e.preventDefault();
+		const key = scanKeyInput.value.trim();
+		if (!key) return;
+		setScanKey(key);
+		start();
+	});
+
+	// Перезавантаження — найпростіший спосіб коректно зупинити камеру.
+	changeKeyBtn.addEventListener("click", () => {
+		clearScanKey();
+		location.reload();
+	});
+
 	restartBtn.addEventListener("click", () => {
 		clearState();
-		startBookScanner();
+		start();
 	});
 
 	skipReaderBtn.addEventListener("click", () => {
@@ -253,8 +316,8 @@
 		}
 	});
 
-  // Старт одразу після завантаження
-	startBookScanner();
+	// Старт одразу після завантаження
+	start();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 </body>
