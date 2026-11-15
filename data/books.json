@@ -889,14 +889,5 @@
     "Lang": "UA",
     "Available": "Yes",
     "Cover": "https://ostriv-library.github.io/img/covers/103.jpg"
-  },
-  {
-    "Book ID": 100,
-    "Name": "test 2",
-    "Description": "test3",
-    "Author": "test 2",
-    "Lang": "ENG",
-    "Available": "Yes",
-    "Cover": "https://websitename.com/images/book-cover.jpg"
   }
 ]
